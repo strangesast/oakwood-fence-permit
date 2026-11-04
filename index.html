@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#f3f5ef" />
+    <title>Fence Material Planner</title>
+    <meta
+      name="description"
+      content="Touch, drag and explore a 3D fence with live material estimates."
+    />
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <div>
+          <div class="eyebrow">FENCE PLANNER</div>
+          <h1>574 Oakwood Fence rebuild</h1>
+        </div>
+        <button id="reset" class="textbutton">Reset</button>
+      </header>
+      <p class="intro">
+        Drag ↔ at the outer edge for total length, or 4′ at the height change for the short section.
+        Short feet stay fixed on resize (clamped if needed). Pinch to zoom either view; drag to pan
+        in 2D or orbit in 3D.
+      </p>
+      <section class="visual-panel">
+        <div class="viewer-toolbar">
+          <span id="viewstatus" class="viewstatus">Loading 3D…</span>
+          <div class="viewtools">
+            <button id="fit" aria-label="Focus building from southwest street corner">
+              SW view
+            </button>
+            <button id="zoomIn" aria-label="Zoom in">＋</button>
+            <button id="zoomOut" aria-label="Zoom out">−</button>
+          </div>
+        </div>
+        <div class="viewer" id="viewer" aria-label="Interactive fence preview">
+          <div id="scene"></div>
+          <svg
+            id="fallback"
+            viewBox="0 0 420 410"
+            aria-label="Fence plan fallback"
+            hidden
+            style="display: none"
+          ></svg>
+          <div class="compass" aria-label="Compass: north arrow rotates with the camera">
+            <svg id="compass-needle" viewBox="0 0 64 64" role="img" aria-label="North">
+              <text x="32" y="11" text-anchor="middle">N</text>
+              <path d="M32 15 L39 43 L32 38 L25 43 Z" fill="#355249" />
+              <path d="M32 49 L28 39 L32 41 L36 39 Z" fill="#a7b5a5" />
+              <text x="53" y="35" text-anchor="middle">E</text>
+              <text x="11" y="35" text-anchor="middle">W</text>
+              <text x="32" y="61" text-anchor="middle">S</text>
+            </svg>
+          </div>
+          <div id="road-labels" aria-hidden="true" hidden></div>
+        </div>
+        <div class="building-cycle-row">
+          <button id="building-cycle" type="button" aria-describedby="building-help" disabled>
+            Buildings: Normal ↻
+          </button>
+          <span id="building-help" class="sr-only"
+            >Press to cycle house and shed visibility: Normal, Ghost, Footprint.</span
+          >
+        </div>
+        <div class="viewcaption">
+          View from Paine × Oakwood · survey scale + photo-informed roof shapes · streets/sidewalks
+          schematic
+        </div>
+      </section>
+      <section class="profile-grid" aria-label="Fence profiles">
+        <span class="sr-only"
+          >Drag the endpoint or height-transition handle. East grows rightward from the northeast
+          corner; North grows leftward from the northeast corner. Arrow keys move each handle; Home
+          and End reach its limits. Four-foot section length stays fixed when total length changes,
+          clamped to available length.</span
+        >
+        <section class="profile-card east-control" aria-labelledby="east-title">
+          <div class="profile-title">
+            <h2 id="east-title">East</h2>
+            <span>NE → Oakwood</span>
+          </div>
+          <div class="profile-rectangle integrated-profile">
+            <div class="active-fence" aria-hidden="true">
+              <div class="fence-profile">
+                <i class="four-profile"></i><i class="six-profile"></i>
+              </div>
+              <span class="profile-end start">6 ft</span>
+              <span class="profile-end end">4 ft</span>
+            </div>
+            <div class="length-indicator" aria-hidden="true"></div>
+            <div class="divide-indicator" aria-hidden="true"></div>
+            <div class="integrated-caption" aria-hidden="true">
+              <span>Length</span><b id="east-length-label"></b>
+            </div>
+            <span id="east-divide-label" class="divide-caption" aria-hidden="true">↔ Divide</span>
+            <button
+              id="handle-east"
+              class="fence-handle endpoint-handle"
+              role="slider"
+              aria-label="East total fence length"
+              aria-valuemin="0"
+              aria-valuemax="101.5"
+              aria-valuenow="0"
+              title="Drag total length"
+            >
+              <span aria-hidden="true">↔</span>
+            </button>
+            <button
+              id="east-height-slider"
+              class="fence-handle transition-handle"
+              role="slider"
+              aria-label="East four-foot section length"
+              aria-valuemin="0"
+              aria-valuemax="101.5"
+              aria-valuenow="0"
+              title="Drag height transition"
+            >
+              <span aria-hidden="true">4′</span>
+            </button>
+          </div>
+          <p class="profile-summary" id="east-transition-location"></p>
+          <p class="sr-only" id="east-segment-summary"></p>
+          <input id="em" type="hidden" />
+          <input id="et" type="hidden" />
+          <details class="exact-details">
+            <summary>Exact length</summary>
+            <label
+              >East ft<input
+                id="east"
+                aria-label="East boundary exact length in feet"
+                type="number"
+                min="0"
+                max="101.5"
+                step="0.5"
+            /></label>
+          </details>
+        </section>
+        <section class="profile-card north-control" aria-labelledby="north-title">
+          <div class="profile-title">
+            <h2 id="north-title">North</h2>
+            <span>Paine ← NE</span>
+          </div>
+          <div class="profile-rectangle integrated-profile">
+            <div class="active-fence" aria-hidden="true">
+              <div class="fence-profile">
+                <i class="four-profile"></i><i class="six-profile"></i>
+              </div>
+              <span class="profile-end start">4 ft</span>
+              <span class="profile-end end">6 ft</span>
+            </div>
+            <div class="length-indicator" aria-hidden="true"></div>
+            <div class="divide-indicator" aria-hidden="true"></div>
+            <div class="integrated-caption" aria-hidden="true">
+              <span>Length</span><b id="north-length-label"></b>
+            </div>
+            <span id="north-divide-label" class="divide-caption" aria-hidden="true">↔ Divide</span>
+            <button
+              id="handle-north"
+              class="fence-handle endpoint-handle"
+              role="slider"
+              aria-label="North total fence length"
+              aria-valuemin="0"
+              aria-valuemax="61.5"
+              aria-valuenow="0"
+              title="Drag total length"
+            >
+              <span aria-hidden="true">↔</span>
+            </button>
+            <button
+              id="north-height-slider"
+              class="fence-handle transition-handle"
+              role="slider"
+              aria-label="North four-foot section length"
+              aria-valuemin="0"
+              aria-valuemax="61.5"
+              aria-valuenow="0"
+              title="Drag height transition"
+            >
+              <span aria-hidden="true">4′</span>
+            </button>
+          </div>
+          <p class="profile-summary" id="north-transition-location"></p>
+          <p class="sr-only" id="north-segment-summary"></p>
+          <input id="nm" type="hidden" />
+          <input id="nt" type="hidden" />
+          <details class="exact-details">
+            <summary>Exact length</summary>
+            <label
+              >North ft<input
+                id="north"
+                aria-label="North boundary exact length in feet"
+                type="number"
+                min="0"
+                max="61.5"
+                step="0.5"
+            /></label>
+          </details>
+        </section>
+      </section>
+      <div class="legend">
+        <span><i class="house"></i>Low-poly house</span>
+        <span><i class="porch"></i>Porches</span>
+        <span><i class="posts"></i>Dark posts</span>
+        <span><i class="shed"></i>8×12 ft shed*</span>
+      </div>
+      <div class="mainrow">
+        <section class="controls" aria-label="Fence size and height controls">
+          <details class="settings">
+            <summary>Construction settings</summary>
+            <div class="fields">
+              <label
+                >Post spacing (ft)<input id="spacing" type="number" min="0.5" step="0.5"
+              /></label>
+              <label>Waste (%)<input id="waste" type="number" min="0" max="100" /></label>
+              <label
+                >6 ft section rails / bay<input id="rails6" type="number" min="1" max="20"
+              /></label>
+              <label
+                >4 ft section rails / bay<input id="rails4" type="number" min="1" max="20"
+              /></label>
+              <label
+                >Picket width (in)<input id="width" type="number" min="0.1" step="0.125"
+              /></label>
+              <label>Picket gap (in)<input id="gap" type="number" min="0" step="0.125" /></label>
+              <label>Hole diameter (in)<input id="diameter" type="number" min="1" /></label>
+              <label>Hole depth (in)<input id="depth" type="number" min="1" /></label>
+              <label>Gravel depth (in)<input id="gravel" type="number" min="0" /></label>
+              <label
+                >Post actual size (in)<input id="post" type="number" min="0.1" step="0.5"
+              /></label>
+              <label
+                >Bag yield (ft³)<input id="yield" type="number" min="0.01" step="0.05"
+              /></label>
+            </div>
+            <p>Default concrete: 80 lb bag, 0.60 ft³ yield. Set a run to 0 to omit it.</p>
+          </details>
+        </section>
+        <section class="materials">
+          <div class="materialhead">
+            <h2>Your materials</h2>
+            <button id="print" class="textbutton">Print</button>
+          </div>
+          <div id="errors" role="alert"></div>
+          <div id="results" aria-live="polite"></div>
+        </section>
+      </div>
+      <div class="notice">
+        <strong>Height changes are design choices, not zoning approval.</strong> 4 ft and 6 ft are
+        design options, not approved heights. Verify property lines, local setbacks and height
+        limits, frost depth and utilities. One northeast corner; no gates. The shed body is exactly
+        8×12 ft in model units. Provisional rear placement assumes the observed 48-inch gap is
+        wall-to-wall from the northernmost house wall, not the porch. Assumed roof: 7 ft walls, 9 ft
+        8 in ridge, photo-estimated 8:12 pitch, 6-inch overhangs on all sides (13×9 ft roof
+        outline). The roof edge is 42 inches from the house footprint; the house roof/eaves are
+        approximate. The assumed north roof edge is about 4.88 ft from the fitted boundary, below
+        the 5 ft reference; confirm the applicable setback measurement with the village. Exact site
+        placement and shed roof dimensions remain unconfirmed. It does not change fence lengths or
+        establish permit approval. Building shadow is an approximate reconstruction of the supplied
+        2012 survey, not a sun/shade study. Current setbacks, sight triangles and allowed transition
+        locations are unverified.
+      </div>
+      <details class="method">
+        <summary>House &amp; shed model assumptions</summary>
+        <p>
+          Photo-informed low-poly house: two-storey south-facing main gable, shallow hipped front
+          porch roof, west bay with a small hipped roof, square porch posts, three upper front
+          windows and right-side entry. Main eaves/ridge are estimated at 18/25 ft; rear mass at
+          16/21.5 ft. The covered west and north porch roofs slope away from the house and meet at a
+          continuous diagonal hip; open and enclosed sections share the same roof surfaces. Rear
+          roof junctions and lower extensions are simplified assumptions, not measured roof
+          geometry. Ground-level footprint follows the approximate survey trace. Photos show shed
+          gable and overhangs, but do not verify roof pitch, height or exact placement; shed heights
+          and pitch below remain provisional.
+        </p>
+        <p>
+          Body: 8×12 ft (96 ft²). Roof: 9×13 ft (117 ft² projected). Gable ridge runs along the 12
+          ft direction, aligned with the house north wall. Dimensions beyond the body and
+          approximate 48-inch gap are provisional.
+        </p>
+        <p>
+          Approximate roof-edge clearances to survey-fit property lines: north 4.88 ft; east 9.92
+          ft; west 38.55 ft; south 87.43 ft. The north wall is approximately 5.39 ft from the fitted
+          property line; the north roof edge is approximately 4.88 ft away, below the 5 ft
+          reference. Confirm how the village measures the applicable setback, actual survey
+          coordinates and any approvals before relying on this placement. These geometric distances
+          are not certified setbacks.
+          <a href="https://ecode360.com/36033243" target="_blank" rel="noopener"
+            >East Aurora Table 20.4</a
+          >
+          lists 5 ft accessory side/rear lot-line setbacks; Table 20.5 lists a 15 ft height limit.
+          <a href="https://ecode360.com/36033358" target="_blank" rel="noopener">§285-30.4</a>
+          applies front-yard requirements along both streets on residential corner lots. The 48-inch
+          house gap is not a lot-line setback. No compliance conclusion is made. Corner-lot rules,
+          zoning district, structure classification and prior approvals must be confirmed before
+          relying on placement.
+        </p>
+      </details>
+      <details class="method">
+        <summary>Calculation details &amp; assumptions</summary>
+        <div id="math"></div>
+        <section class="notes">
+          <div class="notecols">
+            <div>
+              <h3>Transitions &amp; shared posts</h3>
+              <p>
+                Distances start at the shared northeast corner. The height-transition handles
+                control the length of 4 ft fencing toward the street; 6 ft fencing begins at the
+                northeast corner. The short section stays fixed in feet when total length changes,
+                clamped to the available run length. East and North controls are mirrored to match
+                the plan.
+              </p>
+              <p>
+                Each nonempty height section is split into equal bays no longer than maximum
+                spacing. A post is placed exactly at the transition; it serves both heights and is
+                sized for the taller section. The northeast corner is counted once and uses the
+                taller adjacent section. Posts = total bays + 1, or zero when no runs are active.
+              </p>
+            </div>
+            <div>
+              <h3>Boards &amp; footings</h3>
+              <p>
+                Pickets are rounded up separately for each section: (length × 12 + gap) ÷ (width +
+                gap). Face-mounted boards cover the full section; post widths are not subtracted.
+                Rails = bays × rails per bay for that height, with stock length rounded up to the
+                next 2 ft. No reuse of offcuts is assumed.
+              </p>
+              <p>
+                Post stock covers section height plus hole depth minus gravel, rounded up to the
+                next 2 ft. Concrete subtracts the square post volume from the circular footing.
+                Waste is applied to each stock group before rounding; concrete bags are pooled
+                across all holes. Spare posts do not add footings.
+              </p>
+            </div>
+            <div>
+              <h3>Survey context &amp; limits</h3>
+              <p>
+                The lot uses the survey's 61.50 × 101.50 ft edges and 90°56′ southwest angle. The
+                house outline is an approximate orthogonal fit to a traced scan; lighter shapes are
+                porches. Streets are schematic, muted bands extended beyond the 3D view. Camera
+                framing follows the house, not the road extents. Model axes follow Oakwood, not
+                geodetic bearings.
+              </p>
+              <p>
+                Confirm boundaries, permits, utility marking, soil, wind, frost and construction
+                details. Survey geometry does not establish legal fence height. Rail size, lumber
+                availability, fasteners, cut details, slope and ground clearance require
+                verification. No gates, demolition, labor or delivery included.
+              </p>
+            </div>
+          </div>
+        </section>
+      </details>
+      <footer>Plan it. Adjust it. Build with confidence.</footer>
+    </main>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

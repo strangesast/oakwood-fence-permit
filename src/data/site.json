@@ -1,0 +1,256 @@
+{
+  "conventions": {
+    "units": "feet",
+    "axes_2d": "Plan coordinates [x, y] in feet relative to the southwest lot corner [0, 0]. +x runs east along the Oakwood Ave frontage; +y runs north perpendicular to Oakwood Ave. The west and east boundaries incline west by 56 arcminutes (90°56′ southwest corner angle).",
+    "axes_3d": "Three.js world coordinates map plan [x, y] and elevation h (feet above grade) to [x, sampleElevation(x, y) + h, -y], with +X east, +Y up, and -Z north (+Z south).",
+    "extensibility": "Supports custom property polygons (`lot`), parameterized fence runs (`fencePlan`), custom building footprints and architectural massing (`house`, `porches`, `houseModel`, `shed`), terrain models (`elevation` with mode 'flat', 'slope', or 'grid'), and overhead aerial/satellite overlays (`imagery`).",
+    "survey_fit_vs_provisional": "lot, house, and porches are traced from an approximate orthogonal fit to the 2012 survey scan. Roof heights, roof pitches, rear roof junctions, schematic streets/sidewalks, and shed placement/overhangs are provisional photo-informed modeling assumptions, not certified survey or zoning measurements."
+  },
+  "lot": [
+    [0.0, 0.0],
+    [61.5, 0.0],
+    [59.84666454451664, 101.48653350012327],
+    [-1.653335455483357, 101.48653350012327]
+  ],
+  "fencePlan": {
+    "cornerVertexIndex": 2,
+    "skewAngleArcMinutes": 56,
+    "picketOffsetFt": 0.22,
+    "runs": {
+      "east": {
+        "key": "east",
+        "name": "East",
+        "subtitle": "NE → Oakwood",
+        "maxLength": 101.5,
+        "defaultLength": 81.5,
+        "defaultMode": "6",
+        "defaultTransition": 40,
+        "uiDirection": "ltr"
+      },
+      "north": {
+        "key": "north",
+        "name": "North",
+        "subtitle": "Paine ← NE",
+        "maxLength": 61.5,
+        "defaultLength": 41.5,
+        "defaultMode": "6",
+        "defaultTransition": 20,
+        "uiDirection": "rtl"
+      }
+    }
+  },
+  "elevation": {
+    "mode": "flat",
+    "baseElevationFt": 0
+  },
+  "imagery": null,
+  "planView": {
+    "width": 420,
+    "height": 410,
+    "origin": [100, 310],
+    "scale": 2.55,
+    "labels": [
+      { "text": "OAKWOOD · SOUTH", "x": 145, "y": 370, "fontSize": 12 },
+      { "text": "PAINE · WEST", "x": 42, "y": 205, "fontSize": 12, "rotate": -90 },
+      { "text": "SW", "x": 76, "y": 326, "fontSize": 11 },
+      { "text": "NE corner", "x": 265, "y": 50, "fontSize": 11 }
+    ]
+  },
+  "streets": {
+    "farExtentFt": 10000,
+    "roadElevationFt": -0.25,
+    "sidewalkElevationFt": -0.015,
+    "centerlineElevationFt": -0.2,
+    "curbElevationFt": 0.025,
+    "labels3D": [
+      {
+        "name": "street-text-paine",
+        "text": "PAINE ST · WEST",
+        "x": -15,
+        "z": -54,
+        "rotationRad": 1.5707963267948966
+      },
+      {
+        "name": "street-text-oakwood",
+        "text": "OAKWOOD AVE · SOUTH",
+        "x": 31,
+        "z": 19,
+        "rotationRad": 0
+      }
+    ]
+  },
+  "house": [
+    [29.731058319297652, 35.215462067647834],
+    [50.32093170107327, 35.491917912371086],
+    [50.147764439220246, 48.38906609526386],
+    [55.116761166383746, 48.45578375603641],
+    [54.93352642783184, 62.10273728564316],
+    [49.96452970066834, 62.036019624870605],
+    [49.75573444467112, 77.58666890849103],
+    [48.51022799012701, 77.56994575859036],
+    [48.42276828443807, 84.08376813027947],
+    [38.92644650488149, 83.95626304024552],
+    [39.013906210570426, 77.4424406685564],
+    [33.09715917940022, 77.36299776630118],
+    [33.309509401020186, 61.547581817602804],
+    [29.378211284515462, 61.49479711506941],
+    [29.442956964169596, 56.672669561824335],
+    [27.239602260144544, 56.643085587477735],
+    [27.346092980938373, 48.71187161848428],
+    [29.549447684963425, 48.74145559283088]
+  ],
+  "porches": [
+    [
+      [31.08568239855121, 35.048696239170894],
+      [49.35289641822086, 35.374119374824176],
+      [49.54431900776046, 28.665291155458966],
+      [30.962022294534354, 28.37027696952835]
+    ],
+    [
+      [26.361437853847242, 83.9141169415796],
+      [38.95390253785334, 84.02853518889266],
+      [38.98449682977674, 77.60397911889117],
+      [33.10134395225828, 77.48591534182414],
+      [33.30143216640773, 61.714566937922854],
+      [26.69861293154311, 61.07214034901563]
+    ]
+  ],
+  "houseModel": {
+    "wallHeightFt": 9,
+    "porchWraparound": {
+      "outline": [
+        [25.9, 60.6],
+        [33.8, 61.4],
+        [33.6, 77],
+        [39, 77],
+        [49, 77],
+        [49, 84.7],
+        [25.9, 84.7]
+      ],
+      "westOriginX": 25.9,
+      "northOriginY": 84.7,
+      "eaveHeightFt": 8,
+      "slope": 0.12,
+      "coveredWallRange": [6, 12],
+      "closures": [
+        { "name": "west", "from": [33.31, 61.55], "to": [33.31, 77.44] },
+        { "name": "north", "from": [33.31, 77.44], "to": [49, 77.44] },
+        { "name": "south", "from": [29.73, 61.55], "to": [33.31, 61.55] }
+      ],
+      "rearPosts": [0, 5]
+    },
+    "gables": [
+      {
+        "name": "main",
+        "x0": 29.73,
+        "x1": 50.32,
+        "y0": 35.35,
+        "y1": 61.55,
+        "eave": 18,
+        "ridge": 25,
+        "overhang": 0.7
+      },
+      {
+        "name": "rear-assumed",
+        "x0": 33.31,
+        "x1": 49.96,
+        "y0": 61.55,
+        "y1": 77.44,
+        "eave": 16,
+        "ridge": 21.5,
+        "overhang": 0.7
+      }
+    ],
+    "eastWingRoof": [
+      [49.7, 47.8, 11],
+      [55.8, 47.9, 9],
+      [55.6, 62.7, 9],
+      [49.5, 62.6, 11]
+    ],
+    "westBayHip": {
+      "eaveHeightFt": 9.1,
+      "apex": [28.3, 52.7, 10.8],
+      "perimeter": [
+        [26.6, 48.2],
+        [30, 48.25],
+        [29.9, 57.2],
+        [26.5, 57.15]
+      ]
+    },
+    "frontPorch": {
+      "roofCorners": [
+        [30.4, 27.8, 8.2],
+        [50, 27.8, 8.2],
+        [50, 35.3, 8.2],
+        [30.4, 35.3, 8.2]
+      ],
+      "ridge": [
+        [37.9, 35.3, 9.5],
+        [42.5, 35.3, 9.5]
+      ],
+      "postXs": [31, 39.5, 49.4],
+      "postY": 29.1,
+      "deck": { "w": 18.6, "h": 0.4, "d": 6.7, "x": 40.2, "y": 31.8, "z": 0.8 },
+      "railZs": [2, 3.4],
+      "balusterXs": [31.5, 33, 34.5, 36, 37.5, 39, 40.5, 42, 43],
+      "steps": {
+        "count": 3,
+        "w": 5.5,
+        "h": 0.25,
+        "d": 1.1,
+        "x": 46,
+        "startY": 27.8,
+        "stepY": 0.85,
+        "startZ": 0.65,
+        "stepZ": 0.2
+      }
+    },
+    "frontWindows": [
+      { "x": 33.8, "z": 14.2 },
+      { "x": 40, "z": 14.2 },
+      { "x": 46.2, "z": 14.2 },
+      { "x": 33.8, "z": 4.5 },
+      { "x": 40, "z": 4.5 }
+    ],
+    "westWindows": { "ys": [40.2, 57], "zs": [4.7, 14.2] },
+    "bayWindows": { "ys": [50, 54.7], "z": 5 },
+    "frontDoor": { "x": 46.2, "z": 4 }
+  },
+  "source": "2012 survey; approximate orthogonal fit to scan; not measured site coordinates",
+  "shed": {
+    "width_ft": 12,
+    "depth_ft": 8,
+    "wall_height_ft": 7,
+    "ridge_height_ft": 9.666666666666666,
+    "overhang_ft": 0.5,
+    "roof_pitch": "8:12 (photo estimate)",
+    "angle_rad": 0.013425980255883806,
+    "center": [43.56720277941855, 92.01929456830995],
+    "corners": [
+      [37.62144584975356, 87.93910161535528],
+      [49.62036432432476, 88.10020853821713],
+      [49.51295970908354, 96.0994875212646],
+      [37.51404123451234, 95.93838059840276]
+    ],
+    "roof_corners": [
+      [37.12820370176568, 87.43243389046225],
+      [50.12703204921781, 87.60696639022925],
+      [50.006201857071424, 96.60615524615764],
+      [37.00737350961929, 96.43162274639064]
+    ],
+    "wall_gap_ft": 4,
+    "roof_clearance_ft": {
+      "south": 87.43,
+      "east": 9.92,
+      "north": 4.88,
+      "west": 38.55
+    },
+    "placement": "Provisional rear placement: 48 inches between shed wall and northernmost house wall, not porch. Paine describes viewpoint, not shed location. Body 8×12 ft; assumed 7 ft walls, approximately 8:12 photo-estimated gable roof, 6 inch overhangs on all sides. Survey fit and location are approximate; not a compliance determination.",
+    "wall_clearance_ft": {
+      "south": 87.94,
+      "east": 10.42,
+      "north": 5.39,
+      "west": 39.05
+    }
+  }
+}
