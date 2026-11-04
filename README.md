@@ -20,6 +20,16 @@ Interactive two-run fence material estimator for 574 Oakwood, with a survey-info
 | `npm run test:browser`      | Run the Playwright browser suite against the production build at `/oakwood-fence-permit/`           |
 | `npm run check`             | Run formatting check, lint, unit/scene tests, production build, and Git tracking check              |
 
+## Hosting
+
+The planner is hosted at [strangesast.github.io/oakwood-fence-permit](https://strangesast.github.io/oakwood-fence-permit/).
+
+Every push to `main` runs the [GitHub Pages workflow](.github/workflows/pages.yml): locked dependency installation, formatting/lint checks, unit and scene tests, a production build, dependency audit, and browser tests. Pull requests run the same checks without publishing. The workflow uses Node.js 24 from `.nvmrc`.
+
+After the checks pass, the workflow uploads `dist/` as a Pages artifact and deploys that exact build. Generated assets stay out of Git. The `github-pages` environment allows deployment only from `main`, and superseded builds do not replace a newer revision. The workflow can also be started manually from the Actions tab.
+
+Repository Settings → Pages must use **GitHub Actions** as its source. Vite's `base` is `/oakwood-fence-permit/`; update it if the project URL changes. To roll back an application change, revert its commit and push to `main`, then verify the resulting Pages deployment. Inspect build/deployment logs with `gh run list --workflow pages.yml` and `gh run view <run-id> --log-failed`.
+
 ## Controls
 
 - Drag each endpoint (`↔`) to change total run length; use **Exact length** for numeric entry.
