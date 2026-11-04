@@ -1,0 +1,10 @@
+{
+  "name": "oakwood-fence-permit",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Survey-informed fence visualization and material estimator",
+  "scripts": {
+    "test": "node tests/calc.test.cjs && node tests/controls.test.cjs && node tests/scene.test.mjs"
+  },
+  "engines": { "node": ">=24" }
+}
